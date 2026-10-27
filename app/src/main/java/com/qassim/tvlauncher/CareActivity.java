@@ -36,8 +36,8 @@ public class CareActivity extends Activity {
     private void render(){
         root=new LinearLayout(this);root.setOrientation(LinearLayout.VERTICAL);root.setBackgroundColor(BACK);root.setPadding(dp(28),dp(18),dp(28),dp(16));setContentView(root);
         LinearLayout header=line();root.addView(header,new LinearLayout.LayoutParams(-1,dp(68)));
-        TextView title=text("✦  QASSIM TV CARE",29,true);title.setTextColor(ACCENT);header.addView(title,new LinearLayout.LayoutParams(0,-1,1));
-        addHeaderButton(header,"↻  تحديث",()->render());addHeaderButton(header,"⌂  الرئيسية",()->finish());
+        TextView title=text("✦  SMART TV CARE",29,true);title.setTextColor(ACCENT);header.addView(title,new LinearLayout.LayoutParams(0,-1,1));
+        addHeaderButton(header,"✦  AI Doctor",()->startActivity(new Intent(this,AiDoctorActivity.class)));addHeaderButton(header,"↻  تحديث",()->render());addHeaderButton(header,"⌂  الرئيسية",()->finish());
         TextView subtitle=text("مركز العناية بالتلفزيون  •  تشخيص سريع وأدوات صيانة آمنة",16,false);subtitle.setTextColor(MUTED);root.addView(subtitle);
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
         dashboard=new LinearLayout(this);dashboard.setOrientation(LinearLayout.VERTICAL);dashboard.setPadding(0,dp(18),0,dp(8));scroll.addView(dashboard);
