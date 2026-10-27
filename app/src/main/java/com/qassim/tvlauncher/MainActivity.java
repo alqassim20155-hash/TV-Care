@@ -99,15 +99,20 @@ public class MainActivity extends Activity {
             else if(path.equals("/")||path.startsWith("/?")){response=page(path);}
             else if(!path.startsWith("/action?")){status=404;response="Not found";}
             else {Map<String,String> q=query(path);if(!token.equals(q.get("pin"))){status=403;response="Invalid PIN";}else{String pkg=q.getOrDefault("pkg","");String op=q.getOrDefault("op","");if(!validPackage(pkg)){status=400;response="Invalid app";}else{if(op.equals("up")||op.equals("down")){List<String> order=readOrder();if(!order.contains(pkg))order.add(pkg);int idx=order.indexOf(pkg),target=idx+(op.equals("up")?-1:1);if(target>=0&&target<order.size())Collections.swap(order,idx,target);saveOrder(order);}else if(op.equals("favorite")){boolean old=getPreferences(0).getBoolean(pkg,false);getPreferences(0).edit().putBoolean(pkg,!old).apply();runOnUiThread(()->populate());}else if(op.equals("launch")){runOnUiThread(()->{Intent i=launch(pkg);if(i!=null)try{startActivity(i);}catch(Exception ignored){}});}else if(op.equals("uninstall")){runOnUiThread(()->{Intent i=new Intent(Intent.ACTION_DELETE,Uri.parse("package:"+pkg));try{startActivity(i);}catch(Exception ignored){Toast.makeText(MainActivity.this,"الحذف غير مدعوم",Toast.LENGTH_LONG).show();}});}response="<meta http-equiv='refresh' content='0;url=/?pin="+token+"'>";}}}
-            byte[] data=response.getBytes("UTF-8");OutputStream out=socket.getOutputStream();out.write(("HTTP/1.1 "+status+" OK
-Content-Type: text/html; charset=utf-8
-Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-Content-Length: "+data.length+"
-Connection: close
-
-").getBytes("UTF-8"));out.write(data);out.flush();}catch(Exception ignored){}}
+            byte[] data = response.getBytes("UTF-8");
+            OutputStream out = socket.getOutputStream();
+            String headers = "HTTP/1.1 " + status + " OK\r\n"
+                    + "Content-Type: text/html; charset=utf-8\r\n"
+                    + "Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'\r\n"
+                    + "Cache-Control: no-store\r\n"
+                    + "X-Content-Type-Options: nosniff\r\n"
+                    + "Content-Length: " + data.length + "\r\n"
+                    + "Connection: close\r\n"
+                    + "\r\n";
+            out.write(headers.getBytes("UTF-8"));
+            out.write(data);
+            out.flush();
+        } catch (Exception ignored) {}}
         private Map<String,String> query(String path){Map<String,String> map=new HashMap<>();int ix=path.indexOf('?');if(ix<0)return map;for(String part:path.substring(ix+1).split("&")){String[] a=part.split("=",2);try{map.put(java.net.URLDecoder.decode(a[0],"UTF-8"),a.length>1?java.net.URLDecoder.decode(a[1],"UTF-8"):"");}catch(Exception ignored){}}return map;}
         private boolean validPackage(String pkg){if(pkg.equals(getPackageName()))return false;return launch(pkg)!=null;}
         private String page(String path){String pin=query(path).getOrDefault("pin","");StringBuilder html=new StringBuilder("<!doctype html><html lang='ar' dir='rtl'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>SMART TV Remote</title><style>body{background:#08162b;color:#f5f9ff;font:16px sans-serif;padding:20px;max-width:760px;margin:auto}h1{color:#70dcff}article{background:#172b48;border-radius:14px;margin:12px 0;padding:14px}a,button{display:inline-block;color:white;background:#215c89;padding:9px;margin:4px;border:0;border-radius:9px;text-decoration:none}input{padding:12px;border-radius:9px}small{color:#aac1db}</style><h1>SMART TV — التحكم عن بُعد</h1>");
