@@ -1,4 +1,4 @@
-name: Build Qassim TV Launcher APK
+name: Build SMART TV Launcher APK
 on:
   push:
     branches: [main]
@@ -30,6 +30,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Qassim-TV-Launcher-APK
+          name: SMART-TV-Launcher-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
